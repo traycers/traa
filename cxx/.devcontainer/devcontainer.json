@@ -1,0 +1,31 @@
+{
+    "name": "dev",
+    "build": {
+        "dockerfile": "../Dockerfile.dev",
+        "context": ".."
+    },
+    "runArgs": [
+        "--cap-add=SYS_PTRACE",
+        "--security-opt",
+        "seccomp=unconfined"
+    ],
+    "updateRemoteUserUID": true,
+    "remoteUser": "vscode",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "mikestead.dotenv",
+                "usernamehw.errorl",
+                "earshinov.filter-lines",
+                "pkief.material-icon-theme",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "vadimcn.vscode-lldb",
+                "ms-vscode.cmake-tools",
+                "akiramiyakoda.cppincludeguard",
+                "ajshort.include-autocomplete",
+                "danielpinto8zz6.c-cpp-compile-run",
+                "xaver.clang-format"
+            ]
+        }
+    }
+}
