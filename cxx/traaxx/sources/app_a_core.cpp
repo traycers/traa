@@ -1,10 +1,9 @@
-#include <app_a_core/app_a_core.hpp>
-#include <vecopscale/vecopscale.hpp>
+#include <traaxx/traaxx.hpp>
 
-namespace app_a_core
+namespace traaxx
 {
-    vecutils::Vector2 scale(vecutils::Vector2 v, int factor)
+    int scale(int, int)
     {
-        return vecopscale::scale(v, factor);
+        return 5;
     }
 }

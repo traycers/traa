@@ -49,7 +49,7 @@ target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
         $<BUILD_INTERFACE:${PACKAGE_NAME}::sanitizer>
-        ${PACKAGE_NAME}::app_a_core
+        ${PACKAGE_NAME}::traaxx
     PUBLIC
 )
 

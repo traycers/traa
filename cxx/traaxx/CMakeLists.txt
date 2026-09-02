@@ -56,7 +56,7 @@ target_link_libraries(
     PRIVATE
         $<BUILD_INTERFACE:${PACKAGE_NAME}::sanitizer>
     PUBLIC
-        cxx::ci::demo::project_c::vecopscale
+        # Boost::headers
 )
 
 

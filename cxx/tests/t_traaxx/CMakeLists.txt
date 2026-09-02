@@ -44,7 +44,7 @@ target_link_libraries(
         GTest::GTest
         GTest::Main
         ${PACKAGE_NAME}::sanitizer
-        ${PACKAGE_NAME}::app_a_core
+        ${PACKAGE_NAME}::traaxx
 )
 
 
