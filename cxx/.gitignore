@@ -1,5 +1,5 @@
 _build*
-build
+/build
 .vs
 temp
 .task

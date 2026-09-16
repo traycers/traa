@@ -15,7 +15,9 @@ Blocked by: 07, 08
 - свободная функция: `dfs_reorder(const Tree<T,IndexT>&) -> std::expected<DfsReorderResult<T,IndexT>, ConvergenceError>`, `DfsReorderResult` = `{ Tree<T,IndexT> tree; std::vector<IndexT> new_to_old; std::vector<IndexT> old_to_new; }`;
 - метод: `Tree<T,IndexT>::dfs_reorder() -> std::expected<ReorderTables<IndexT>, ConvergenceError>`, `ReorderTables` = `{ std::vector<IndexT> new_to_old; std::vector<IndexT> old_to_new; }` (дерево не дублируется в результате — оно и есть `*this` после мутации).
 
-`depth()`/`size()` ([[07-derived-vectors]]) вызываются **внутри** `dfs_reorder`, не передаются аргументами — единственная реальная точка их использования на пути к `pos`, и single-call API проще использовать правильно (не нужно вручную прокидывать `depth`/`size` той же версии дерева). Несходимость любого из них пробрасывается через `std::expected` на выходе самой `dfs_reorder`.
+`depth()`/`size()` ([[07-derived-vectors]]) вызываются **внутри** `dfs_reorder`, не передаются аргументами — единственная реальная точка их использования на пути к `pos`, и single-call API проще использовать правильно (не нужно вручную прокидывать `depth`/`size` той же версии дерева).
+
+**Правка ([[07-derived-vectors]]):** `size()` пересмотрена — она однопроходный топологический scan, не `propagate`-based, сходимости как понятия у неё нет, `std::expected` не возвращает. `std::expected<DfsReorderResult<T,IndexT>, ConvergenceError>` в возврате `dfs_reorder` остаётся как есть — единственный источник несходимости внутри `dfs_reorder` теперь только `depth()`, не «любая из depth/size».
 
 Сегментированный scan вдоль `sibling` (шаг «сумма размеров левых братьев» при вычислении `pos`) — **разовый код внутри `dfs_reorder.cpp`**, не отдельный примитив. Критерий выделения примитива по карте — переиспользование минимум в двух-трёх местах (`propagate`: 4+, `AncestorTable`: 3, permutation/remap: 3+); у этого scan ровно один потребитель в объёме карты — выделение абстракции без второго вызывающего кода было бы спекулятивным обобщением.
 

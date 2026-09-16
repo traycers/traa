@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <sys/resource.h>
@@ -111,11 +112,10 @@ namespace
 
     traaxx::Tree<std::uint32_t> loadUint32Tree(const json& corpus)
     {
-        auto tree = traaxx::Tree<std::uint32_t>{};
-        tree.parent = corpus.at("parent").get<std::vector<std::uint32_t>>();
-        tree.sibling = corpus.at("sibling").get<std::vector<std::uint32_t>>();
-        tree.data = corpus.at("data").get<std::vector<std::uint32_t>>();
-        return tree;
+        auto parent = corpus.at("parent").get<std::vector<std::uint32_t>>();
+        auto sibling = corpus.at("sibling").get<std::vector<std::uint32_t>>();
+        auto data = corpus.at("data").get<std::vector<std::uint32_t>>();
+        return traaxx::Tree<std::uint32_t>{std::move(parent), std::move(sibling), std::move(data)};
     }
 }
 
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
         auto const rssBefore = peakRssBytes();
         for (std::uint64_t i = 0; i < args.warmup; ++i)
         {
-            static_cast<void>(traaxx::depth(tree.parent, static_cast<std::uint32_t>(tree.parent.size())));
+            static_cast<void>(traaxx::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size())));
         }
         auto timings = std::vector<std::int64_t>{};
         timings.reserve(args.repeat);
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
         for (std::uint64_t i = 0; i < args.repeat; ++i)
         {
             auto const start = std::chrono::steady_clock::now();
-            result = traaxx::depth(tree.parent, static_cast<std::uint32_t>(tree.parent.size()));
+            result = traaxx::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size()));
             auto const end = std::chrono::steady_clock::now();
             timings.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count());
         }
