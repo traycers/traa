@@ -1,14 +1,18 @@
 FROM ubuntu:26.04
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update
-RUN  apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y \
+    --no-install-recommends \
     build-essential \
     cmake \
     ninja-build \
     ca-certificates \
     libgtest-dev \
     libgmock-dev \
+    libtbb-dev \
+    libxsimd-dev \
+    libhwy-dev \
     clang \
     clangd \
     clang-tidy \
