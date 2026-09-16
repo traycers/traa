@@ -34,18 +34,25 @@ Status: resolved
 - Числа — обычные JSON-числа (не строки, не base64); `nodes_count` далёк от `2^53`, запас с большим кратным.
 - `payload_type.value` для `kind: "primitive"` — строка с именем типа (`"uint32"`); для `kind: "struct"` — объект `{имя_поля: тип}`, где тип каждого поля — либо строка-примитив, либо вложенный объект-структура (рекурсивно, без повторной обёртки `kind`/`value` на вложенных уровнях). Канарейка использует `{"kind": "struct", "value": {"tag": "string", "weight": "uint32"}}`.
 
-### Cases file — `cases/<shape>.json`
+### Cases — `cases/<shape>/<case_id>.json`
 
-Список именованных вызовов операций из `[[02-operation-set]]` с аргументами:
+**Исправлено при работе над `[[09-cli-schema-details]]`**: не список в одном файле, а один файл на кейс — так CLI-контракт может ссылаться на конкретный кейс одним путём (`--case`), без отдельного индекса внутри общего списка.
 
 ```json
-[
-  {"id": "lca_naive_8_11", "op": "lca_naive", "args": {"a": 8, "b": 11}},
-  {"id": "propagate_down_single_pass_seed2", "op": "propagate_down_single_pass", "args": {"seed": [2]}},
-  {"id": "propagate_down_iterative_seed2", "op": "propagate_down_iterative", "args": {"seed": [2]}},
-  {"id": "mutate_move_4_to_7", "op": "mutate_move", "args": {"x": 4, "q": 7}}
-]
+// cases/wide-shallow/lca_naive_8_11.json
+{"op": "lca_naive", "args": {"a": 8, "b": 11}}
+
+// cases/shuffled-permutation/propagate_down_single_pass_seed2.json
+{"op": "propagate_down_single_pass", "args": {"seed": [2]}}
+
+// cases/shuffled-permutation/propagate_down_iterative_seed2.json
+{"op": "propagate_down_iterative", "args": {"seed": [2]}}
+
+// cases/example/mutate_move_4_to_7.json
+{"op": "mutate_move", "args": {"x": 4, "q": 7}}
 ```
+
+`case_id` (имя файла без `.json`) — то, что раньше было полем `id`; внутри файла оно не повторяется. `args` отсутствует, если операция параметров не требует (например, производные вектора — `{"op": "depth"}`).
 
 - Три propagation-стратегии из `[[02-operation-set]]` — три разных `op`, каждая со своим case/golden. На `shuffled-permutation` `propagate_*_single_pass` даёт *заведомо неверный* golden-результат — это ожидаемое поведение, не ошибка golden.
 - На `corrupted-invariants` заводится только один case — `validate_invariants`; остальные операции на заведомо невалидном дереве не тестируются (поведение не определено теорией).
