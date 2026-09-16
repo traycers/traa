@@ -1,5 +1,8 @@
 #pragma once
 #include <cstdint>
+#include <expected>
+#include <traaxx/propagate.hpp>
+#include <traaxx/reorder_tables.hpp>
 #include <utility>
 #include <vector>
 
@@ -29,6 +32,7 @@ namespace traaxx
         {
             return static_cast<IndexT>(parent_.size());
         }
+        std::expected<ReorderTables<IndexT>, ConvergenceError<IndexT>> bfs_reorder();
 
     private:
         std::vector<IndexT> parent_;
