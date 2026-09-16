@@ -50,6 +50,7 @@ target_link_libraries(
     PRIVATE
         $<BUILD_INTERFACE:${PACKAGE_NAME}::sanitizer>
         ${PACKAGE_NAME}::traaxx
+        nlohmann_json::nlohmann_json
     PUBLIC
 )
 

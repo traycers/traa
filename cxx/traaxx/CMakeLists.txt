@@ -55,8 +55,8 @@ target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
         $<BUILD_INTERFACE:${PACKAGE_NAME}::sanitizer>
+        TBB::tbb
     PUBLIC
-        # Boost::headers
 )
 
 

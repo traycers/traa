@@ -1,6 +1,14 @@
 #pragma once
+#include <cstdint>
+#include <vector>
 
 namespace traaxx
 {
-    int scale(int, int);
+    template<typename T, typename IndexT = std::uint32_t>
+    struct Tree
+    {
+        std::vector<IndexT> parent;
+        std::vector<IndexT> sibling;
+        std::vector<T> data;
+    };
 }

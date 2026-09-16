@@ -17,7 +17,8 @@ option(USE_TEST "use tests" ON)
 
 set(
     PROJECT_DEPS
-    # PKG <package_name>
+    PKG nlohmann_json
+    PKG TBB
 )
 find_pkgs(PROJECT_DEPS)
 if(USE_TEST)
