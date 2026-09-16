@@ -8,6 +8,18 @@
 
 namespace traaxx
 {
+    template<typename IndexT>
+    struct MoveError
+    {
+        enum class Kind
+        {
+            would_create_cycle,
+            tree_corrupted
+        };
+        Kind kind;
+        IndexT iterations = 0;
+    };
+
     template<typename T, typename IndexT = std::uint32_t>
     struct Tree
     {
@@ -34,6 +46,11 @@ namespace traaxx
         }
         std::expected<ReorderTables<IndexT>, ConvergenceError<IndexT>> bfs_reorder();
         std::expected<ReorderTables<IndexT>, ConvergenceError<IndexT>> dfs_reorder();
+        IndexT append(IndexT p, T value = T{});
+        void deleteLeaf(IndexT x);
+        void splice(IndexT x);
+        std::expected<void, ConvergenceError<IndexT>> deleteSubtree(IndexT x);
+        std::expected<void, MoveError<IndexT>> move(IndexT x, IndexT q);
 
     private:
         std::vector<IndexT> parent_;
