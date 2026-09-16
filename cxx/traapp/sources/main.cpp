@@ -145,19 +145,19 @@ int main(int argc, char** argv)
         }
         auto timings = std::vector<std::int64_t>{};
         timings.reserve(args.repeat);
-        auto result = traaxx::DepthResult<std::uint32_t>{};
+        auto result = std::vector<std::uint32_t>{};
         for (std::uint64_t i = 0; i < args.repeat; ++i)
         {
             auto const start = std::chrono::steady_clock::now();
-            result = traaxx::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size()));
+            result = traaxx::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size())).value();
             auto const end = std::chrono::steady_clock::now();
             timings.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count());
         }
         auto const rssAfter = peakRssBytes();
         auto output = json{};
-        output["result"] = result.depth_vector;
+        output["result"] = result;
         output["timing_ns"] = timings;
-        output["iterations"] = result.iterations;
+        output["iterations"] = nullptr;
         output["peak_rss_delta_bytes"] = rssAfter - rssBefore;
         std::cout << output.dump() << "\n";
         return 0;

@@ -1,4 +1,4 @@
-#include <traaxx/depth.hpp>
+#include <traaxx/rank.hpp>
 #include <algorithm>
 #include <execution>
 #include <numeric>
@@ -6,10 +6,10 @@
 namespace traaxx
 {
     template<typename IndexT>
-    std::expected<std::vector<IndexT>, ConvergenceError<IndexT>> depth(
-        const std::vector<IndexT> &parent, IndexT max_iterations)
+    std::expected<std::vector<IndexT>, ConvergenceError<IndexT>> rank(
+        const std::vector<IndexT> &sibling, IndexT max_iterations)
     {
-        auto const n = parent.size();
+        auto const n = sibling.size();
         if (n == 0)
         {
             return std::vector<IndexT>{};
@@ -22,8 +22,8 @@ namespace traaxx
                 std::execution::par, indices.begin(), indices.end(), next.begin(),
                 [&](IndexT i)
                 {
-                    return parent[i] == i ? IndexT{ 0 }
-                                          : static_cast<IndexT>(current[parent[i]] + IndexT{ 1 });
+                    return sibling[i] == i ? IndexT{ 0 }
+                                           : static_cast<IndexT>(current[sibling[i]] + IndexT{ 1 });
                 });
         };
         auto result = propagate(std::vector<IndexT>(n, IndexT{ 0 }), step, max_iterations);
@@ -34,6 +34,6 @@ namespace traaxx
         return std::move(result->state);
     }
 
-    template std::expected<std::vector<std::uint32_t>, ConvergenceError<std::uint32_t>> depth<std::uint32_t>(
+    template std::expected<std::vector<std::uint32_t>, ConvergenceError<std::uint32_t>> rank<std::uint32_t>(
         const std::vector<std::uint32_t> &, std::uint32_t);
 }

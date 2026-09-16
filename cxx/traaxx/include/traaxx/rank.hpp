@@ -7,6 +7,6 @@
 namespace traaxx
 {
     template<typename IndexT>
-    std::expected<std::vector<IndexT>, ConvergenceError<IndexT>> depth(
-        const std::vector<IndexT> &parent, IndexT max_iterations);
+    std::expected<std::vector<IndexT>, ConvergenceError<IndexT>> rank(
+        const std::vector<IndexT> &sibling, IndexT max_iterations);
 }
