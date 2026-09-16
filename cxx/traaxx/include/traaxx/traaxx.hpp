@@ -33,6 +33,7 @@ namespace traaxx
             return static_cast<IndexT>(parent_.size());
         }
         std::expected<ReorderTables<IndexT>, ConvergenceError<IndexT>> bfs_reorder();
+        std::expected<ReorderTables<IndexT>, ConvergenceError<IndexT>> dfs_reorder();
 
     private:
         std::vector<IndexT> parent_;
