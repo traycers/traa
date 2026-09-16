@@ -12,6 +12,7 @@ RUN apt-get update && \
     libgmock-dev \
     libtbb-dev \
     libxsimd-dev \
+    nlohmann-json3-dev \
     libhwy-dev \
     clang \
     clangd \
