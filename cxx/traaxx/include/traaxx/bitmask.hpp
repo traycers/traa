@@ -18,6 +18,7 @@ namespace traaxx
         void atomic_or(std::size_t i);
         std::size_t size() const;
         bool empty() const;
+        std::vector<std::size_t> indices() const;
         void swap(BitMask &other);
         void invert();
         const_iterator cbegin() const;

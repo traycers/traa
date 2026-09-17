@@ -224,6 +224,22 @@ TEST(BitMask, OrAssignOnMismatchedSizesIsNoop)
     EXPECT_EQ(a.size(), 70u);
 }
 
+TEST(BitMask, IndicesReturnsPositionsOfSetBitsInOrder)
+{
+    auto mask = traaxx::BitMask(70);
+    mask.set(3);
+    mask.set(64);
+    mask.set(69);
+    auto const idx = mask.indices();
+    EXPECT_EQ(idx, (std::vector<std::size_t>{ 3, 64, 69 }));
+}
+
+TEST(BitMask, IndicesIsEmptyWhenNoBitsSet)
+{
+    auto const mask = traaxx::BitMask(70);
+    EXPECT_TRUE(mask.indices().empty());
+}
+
 TEST(BitMask, ConcurrentAtomicOrOnSameWordIsRaceFree)
 {
     auto mask = traaxx::BitMask(64);
