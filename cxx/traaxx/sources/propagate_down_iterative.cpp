@@ -20,7 +20,9 @@ namespace traaxx
         {
             next = BitMask<IndexT>(static_cast<IndexT>(n));
             std::for_each(
-                std::execution::par, indices.begin(), indices.end(),
+                std::execution::par,   //
+                indices.cbegin(),      //
+                indices.cend(),        //
                 [&](IndexT i)
                 {
                     if (current.get(i) || current.get(parent[i]))

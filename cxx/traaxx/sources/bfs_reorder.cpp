@@ -26,7 +26,7 @@ namespace traaxx
         }
         auto const &node_depth = *depth_result;
         auto const &node_rank = *rank_result;
-        auto const d_max = *std::max_element(node_depth.begin(), node_depth.end());
+        auto const d_max = *std::max_element(node_depth.cbegin(), node_depth.cend());
         auto new2old = std::vector<IndexT>(n);
         auto old2new = std::vector<IndexT>(n, IndexT{ 0 });
         auto position = IndexT{ 0 };

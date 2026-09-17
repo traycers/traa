@@ -13,7 +13,10 @@ namespace traaxx
         std::iota(result.begin(), result.end(), IndexT{ 0 });
         auto indices = std::vector<IndexT>(n);
         std::iota(indices.begin(), indices.end(), IndexT{ 0 });
-        std::for_each(std::execution::par, indices.begin(), indices.end(),
+        std::for_each(
+            std::execution::par,   //
+            indices.cbegin(),      //
+            indices.cend(),        //
             [&](IndexT j)
             {
                 if (sibling[j] == j && parent[j] != j)

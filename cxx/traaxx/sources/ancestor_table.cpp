@@ -39,7 +39,10 @@ namespace traaxx
             auto const &previous = levels_.back();
             auto next = std::vector<IndexT>(n);
             std::transform(
-                std::execution::par, indices.begin(), indices.end(), next.begin(),
+                std::execution::par,   //
+                indices.cbegin(),      //
+                indices.cend(),        //
+                next.begin(),          //
                 [&](IndexT i) { return previous[previous[i]]; });
             levels_.push_back(std::move(next));
         }

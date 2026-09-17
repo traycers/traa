@@ -45,7 +45,10 @@ namespace traaxx
 
         void invert()
         {
-            std::for_each(std::execution::par, words_.begin(), words_.end(),
+            std::for_each(
+                std::execution::par,   //
+                words_.begin(),        //
+                words_.end(),          //
                 [](std::uint64_t &word) { word = ~word; });
             auto const remainder = static_cast<std::size_t>(bit_count_) % 64;
             if (remainder != 0)
@@ -55,14 +58,14 @@ namespace traaxx
             }
         }
 
-        auto begin() const
+        auto cbegin() const
         {
-            return words_.begin();
+            return words_.cbegin();
         }
 
-        auto end() const
+        auto cend() const
         {
-            return words_.end();
+            return words_.cend();
         }
 
         friend bool operator==(BitMask const &lhs, BitMask const &rhs)

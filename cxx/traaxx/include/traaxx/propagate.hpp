@@ -28,7 +28,11 @@ namespace traaxx
         for (IndexT iteration = 0; iteration < max_iterations; ++iteration)
         {
             step(current, next);
-            auto const changed = !std::equal(std::execution::par, current.begin(), current.end(), next.begin());
+            auto const changed = !std::equal(
+                std::execution::par,   //
+                current.cbegin(),      //
+                current.cend(),        //
+                next.cbegin());
             current.swap(next);
             if (!changed)
             {

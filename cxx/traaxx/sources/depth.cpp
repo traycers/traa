@@ -19,7 +19,10 @@ namespace traaxx
         auto const step = [&](std::vector<IndexT> const &current, std::vector<IndexT> &next)
         {
             std::transform(
-                std::execution::par, indices.begin(), indices.end(), next.begin(),
+                std::execution::par,   //
+                indices.cbegin(),      //
+                indices.cend(),        //
+                next.begin(),          //
                 [&](IndexT i)
                 {
                     return parent[i] == i ? IndexT{ 0 }

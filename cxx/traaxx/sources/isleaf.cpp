@@ -16,8 +16,14 @@ namespace traaxx
         }
         auto is_parent = BitMask<IndexT>(static_cast<IndexT>(n));
         auto indices = std::vector<IndexT>(n);
-        std::iota(indices.begin(), indices.end(), IndexT{ 0 });
-        std::for_each(std::execution::par, indices.begin(), indices.end(),
+        std::iota(
+            indices.begin(),   //
+            indices.end(),     //
+            IndexT{ 0 });
+        std::for_each(
+            std::execution::par,   //
+            indices.cbegin(),      //
+            indices.cend(),        //
             [&](IndexT i)
             {
                 auto const p = parent[i];
@@ -29,7 +35,10 @@ namespace traaxx
         is_parent.invert();
         auto result = std::vector<bool>(n);
         std::transform(
-            indices.begin(), indices.end(), result.begin(), [&](IndexT i) { return is_parent.get(i); });
+            indices.cbegin(),   //
+            indices.cend(),     //
+            result.begin(),     //
+            [&](IndexT i) { return is_parent.get(i); });
         return result;
     }
 

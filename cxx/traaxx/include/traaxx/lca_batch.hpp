@@ -18,7 +18,11 @@ namespace traaxx
         auto result = std::vector<IndexT>(a.size());
         auto indices = std::vector<IndexT>(a.size());
         std::iota(indices.begin(), indices.end(), IndexT{ 0 });
-        std::transform(std::execution::par, indices.begin(), indices.end(), result.begin(),
+        std::transform(
+            std::execution::par,   //
+            indices.cbegin(),      //
+            indices.cend(),        //
+            result.begin(),        //
             [&](IndexT i) { return detail::lca_climb(parent, node_depth, table, a[i], b[i]); });
         return result;
     }

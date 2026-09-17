@@ -22,7 +22,9 @@ namespace traaxx
             auto const &level_k = table.level(k);
             auto next = BitMask<IndexT>(static_cast<IndexT>(n));
             std::for_each(
-                std::execution::par, indices.begin(), indices.end(),
+                std::execution::par,   //
+                indices.cbegin(),      //
+                indices.cend(),        //
                 [&](IndexT i)
                 {
                     if (current.get(i) || current.get(level_k[i]))

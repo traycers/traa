@@ -13,7 +13,10 @@ namespace traaxx
         auto has_right_sibling = BitMask<IndexT>(static_cast<IndexT>(n));
         auto indices = std::vector<IndexT>(n);
         std::iota(indices.begin(), indices.end(), IndexT{ 0 });
-        std::for_each(std::execution::par, indices.begin(), indices.end(),
+        std::for_each(
+            std::execution::par,   //
+            indices.cbegin(),      //
+            indices.cend(),        //
             [&](IndexT k)
             {
                 auto const s = sibling[k];
@@ -24,7 +27,10 @@ namespace traaxx
             });
         auto result = std::vector<IndexT>(n);
         std::iota(result.begin(), result.end(), IndexT{ 0 });
-        std::for_each(std::execution::par, indices.begin(), indices.end(),
+        std::for_each(
+            std::execution::par,   //
+            indices.cbegin(),      //
+            indices.cend(),        //
             [&](IndexT j)
             {
                 if (parent[j] != j && !has_right_sibling.get(j))

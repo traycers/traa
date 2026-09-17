@@ -49,7 +49,11 @@ namespace traaxx
         auto const f = firstchild(parent_, sibling_)[x];
         auto const lc = lastchild(parent_, sibling_)[x];
         auto const p = parent_[x];
-        std::transform(std::execution::par, parent_.begin(), parent_.end(), parent_.begin(),
+        std::transform(
+            std::execution::par,   //
+            parent_.cbegin(),      //
+            parent_.cend(),        //
+            parent_.begin(),       //
             [x, p](IndexT v) { return v == x ? p : v; });
         if (f != x)
         {
