@@ -30,3 +30,17 @@ TEST(IsLeaf, EmptyArray)
     auto const result = traaxx::isleaf(parent);
     EXPECT_TRUE(result.empty());
 }
+
+TEST(IsLeaf, IsolatedRootAmongOtherNodesIsLeaf)
+{
+    // node 0 is its own (childless) root; nodes 1/2 form a separate rooted
+    // subtree under node 2 - node 0's self-loop must not count as "has a child"
+    auto const parent = std::vector<std::uint32_t>{ 0, 2, 2 };
+    auto const result = traaxx::isleaf(parent);
+    auto const expected = std::vector<bool>{ true, true, false };
+    ASSERT_EQ(result.size(), expected.size());
+    for (std::size_t i = 0; i < expected.size(); ++i)
+    {
+        EXPECT_EQ(result[i], expected[i]) << "index " << i;
+    }
+}

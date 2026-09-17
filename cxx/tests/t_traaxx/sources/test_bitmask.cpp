@@ -83,6 +83,42 @@ TEST(BitMask, SwapExchangesContent)
     EXPECT_FALSE(b.get(17));
 }
 
+TEST(BitMask, InvertFlipsAllValidBits)
+{
+    auto mask = traaxx::BitMask<std::uint32_t>(70);
+    mask.set(0);
+    mask.set(64);
+    mask.invert();
+    for (std::uint32_t i = 0; i < mask.size(); ++i)
+    {
+        auto const expected = i != 0 && i != 64;
+        EXPECT_EQ(mask.get(i), expected) << "bit " << i;
+    }
+}
+
+TEST(BitMask, InvertTwiceIsIdentity)
+{
+    auto mask = traaxx::BitMask<std::uint32_t>(70);
+    mask.set(3);
+    mask.set(69);
+    auto const original = mask;
+    mask.invert();
+    mask.invert();
+    EXPECT_EQ(mask, original);
+}
+
+TEST(BitMask, InvertClearsPaddingBitsInLastWord)
+{
+    // size is not a multiple of 64 - inverting must not leave stray 1-bits
+    // past bit_count in the last word, or two masks built the same way would
+    // stop comparing equal after each is inverted.
+    auto a = traaxx::BitMask<std::uint32_t>(70);
+    auto b = traaxx::BitMask<std::uint32_t>(70);
+    a.invert();
+    b.invert();
+    EXPECT_EQ(a, b);
+}
+
 TEST(BitMask, ConcurrentAtomicOrOnSameWordIsRaceFree)
 {
     auto mask = traaxx::BitMask<std::uint32_t>(64);

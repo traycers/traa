@@ -1,6 +1,8 @@
 #pragma once
+#include <algorithm>
 #include <atomic>
 #include <cstdint>
+#include <execution>
 #include <vector>
 
 namespace traaxx
@@ -39,6 +41,18 @@ namespace traaxx
         {
             words_.swap(other.words_);
             std::swap(bit_count_, other.bit_count_);
+        }
+
+        void invert()
+        {
+            std::for_each(std::execution::par, words_.begin(), words_.end(),
+                [](std::uint64_t &word) { word = ~word; });
+            auto const remainder = static_cast<std::size_t>(bit_count_) % 64;
+            if (remainder != 0)
+            {
+                auto const valid_mask = (std::uint64_t{ 1 } << remainder) - 1;
+                words_.back() &= valid_mask;
+            }
         }
 
         auto begin() const
