@@ -1,4 +1,6 @@
 #include <traaxx/nsibling.hpp>
+#include <algorithm>
+#include <execution>
 #include <numeric>
 
 namespace traaxx
@@ -9,14 +11,17 @@ namespace traaxx
         auto const n = sibling.size();
         auto result = std::vector<IndexT>(n);
         std::iota(result.begin(), result.end(), IndexT{ 0 });
-        for (IndexT j = 0; j < static_cast<IndexT>(n); ++j)
-        {
-            auto const s = sibling[j];
-            if (s != j)
+        auto indices = std::vector<IndexT>(n);
+        std::iota(indices.begin(), indices.end(), IndexT{ 0 });
+        std::for_each(std::execution::par, indices.begin(), indices.end(),
+            [&](IndexT j)
             {
-                result[s] = j;
-            }
-        }
+                auto const s = sibling[j];
+                if (s != j)
+                {
+                    result[s] = j;
+                }
+            });
         return result;
     }
 

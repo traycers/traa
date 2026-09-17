@@ -41,6 +41,16 @@ namespace traaxx
             std::swap(bit_count_, other.bit_count_);
         }
 
+        auto begin() const
+        {
+            return words_.begin();
+        }
+
+        auto end() const
+        {
+            return words_.end();
+        }
+
         friend bool operator==(BitMask const &lhs, BitMask const &rhs)
         {
             return lhs.bit_count_ == rhs.bit_count_ && lhs.words_ == rhs.words_;

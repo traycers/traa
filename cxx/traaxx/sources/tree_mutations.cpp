@@ -5,7 +5,9 @@
 #include <traaxx/nsibling.hpp>
 #include <traaxx/permutation.hpp>
 #include <traaxx/propagate_down_iterative.hpp>
+#include <algorithm>
 #include <cassert>
+#include <execution>
 #include <utility>
 
 namespace traaxx
@@ -47,13 +49,8 @@ namespace traaxx
         auto const f = firstchild(parent_, sibling_)[x];
         auto const lc = lastchild(parent_, sibling_)[x];
         auto const p = parent_[x];
-        for (IndexT j = 0; j < static_cast<IndexT>(parent_.size()); ++j)
-        {
-            if (parent_[j] == x)
-            {
-                parent_[j] = p;
-            }
-        }
+        std::transform(std::execution::par, parent_.begin(), parent_.end(), parent_.begin(),
+            [x, p](IndexT v) { return v == x ? p : v; });
         if (f != x)
         {
             sibling_[f] = l != x ? l : f;

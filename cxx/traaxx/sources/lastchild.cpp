@@ -1,4 +1,6 @@
 #include <traaxx/lastchild.hpp>
+#include <algorithm>
+#include <execution>
 #include <numeric>
 
 namespace traaxx
@@ -18,13 +20,16 @@ namespace traaxx
         }
         auto result = std::vector<IndexT>(n);
         std::iota(result.begin(), result.end(), IndexT{ 0 });
-        for (IndexT j = 0; j < static_cast<IndexT>(n); ++j)
-        {
-            if (parent[j] != j && !has_right_sibling[j])
+        auto indices = std::vector<IndexT>(n);
+        std::iota(indices.begin(), indices.end(), IndexT{ 0 });
+        std::for_each(std::execution::par, indices.begin(), indices.end(),
+            [&](IndexT j)
             {
-                result[parent[j]] = j;
-            }
-        }
+                if (parent[j] != j && !has_right_sibling[j])
+                {
+                    result[parent[j]] = j;
+                }
+            });
         return result;
     }
 

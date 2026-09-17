@@ -1,4 +1,6 @@
 #pragma once
+#include <algorithm>
+#include <execution>
 #include <expected>
 #include <utility>
 
@@ -26,7 +28,7 @@ namespace traaxx
         for (IndexT iteration = 0; iteration < max_iterations; ++iteration)
         {
             step(current, next);
-            auto const changed = !(current == next);
+            auto const changed = !std::equal(std::execution::par, current.begin(), current.end(), next.begin());
             current.swap(next);
             if (!changed)
             {

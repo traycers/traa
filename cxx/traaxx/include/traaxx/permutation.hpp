@@ -1,4 +1,7 @@
 #pragma once
+#include <algorithm>
+#include <execution>
+#include <numeric>
 #include <vector>
 
 namespace traaxx
@@ -6,11 +9,12 @@ namespace traaxx
     template<typename IndexT>
     std::vector<IndexT> inverse(std::vector<IndexT> const &new2old)
     {
-        auto old2new = std::vector<IndexT>(new2old.size());
-        for (IndexT k = 0; k < static_cast<IndexT>(new2old.size()); ++k)
-        {
-            old2new[new2old[k]] = k;
-        }
+        auto const n = new2old.size();
+        auto old2new = std::vector<IndexT>(n);
+        auto indices = std::vector<IndexT>(n);
+        std::iota(indices.begin(), indices.end(), IndexT{ 0 });
+        std::for_each(std::execution::par, indices.begin(), indices.end(),
+            [&](IndexT k) { old2new[new2old[k]] = k; });
         return old2new;
     }
 
@@ -18,10 +22,8 @@ namespace traaxx
     std::vector<T> gather(std::vector<T> const &data, std::vector<IndexT> const &new2old)
     {
         auto out = std::vector<T>(new2old.size());
-        for (std::size_t k = 0; k < new2old.size(); ++k)
-        {
-            out[k] = data[new2old[k]];
-        }
+        std::transform(std::execution::par, new2old.begin(), new2old.end(), out.begin(),
+            [&](IndexT src) { return data[src]; });
         return out;
     }
 
@@ -30,10 +32,8 @@ namespace traaxx
         std::vector<IndexT> const &new2old, std::vector<IndexT> const &old2new)
     {
         auto out = std::vector<IndexT>(new2old.size());
-        for (std::size_t k = 0; k < new2old.size(); ++k)
-        {
-            out[k] = old2new[vec[new2old[k]]];
-        }
+        std::transform(std::execution::par, new2old.begin(), new2old.end(), out.begin(),
+            [&](IndexT src) { return old2new[vec[src]]; });
         return out;
     }
 }
