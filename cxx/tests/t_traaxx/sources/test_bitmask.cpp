@@ -119,6 +119,111 @@ TEST(BitMask, InvertClearsPaddingBitsInLastWord)
     EXPECT_EQ(a, b);
 }
 
+TEST(BitMask, EmptyReportsZeroSizedMask)
+{
+    auto const empty = traaxx::BitMask(0);
+    auto const nonEmpty = traaxx::BitMask(1);
+    EXPECT_TRUE(empty.empty());
+    EXPECT_FALSE(nonEmpty.empty());
+}
+
+TEST(BitMask, AndReturnsIntersectionWithoutMutatingOperands)
+{
+    auto a = traaxx::BitMask(70);
+    auto b = traaxx::BitMask(70);
+    a.set(3);
+    a.set(64);
+    b.set(3);
+    b.set(69);
+    auto const result = a & b;
+    EXPECT_TRUE(result.get(3));
+    EXPECT_FALSE(result.get(64));
+    EXPECT_FALSE(result.get(69));
+    EXPECT_TRUE(a.get(64));
+    EXPECT_TRUE(b.get(69));
+}
+
+TEST(BitMask, OrReturnsUnionWithoutMutatingOperands)
+{
+    auto a = traaxx::BitMask(70);
+    auto b = traaxx::BitMask(70);
+    a.set(3);
+    b.set(69);
+    auto const result = a | b;
+    EXPECT_TRUE(result.get(3));
+    EXPECT_TRUE(result.get(69));
+    EXPECT_FALSE(a.get(69));
+    EXPECT_FALSE(b.get(3));
+}
+
+TEST(BitMask, NotReturnsInvertedCopyWithoutMutatingOperand)
+{
+    auto const mask = traaxx::BitMask(70);
+    auto const result = ~mask;
+    EXPECT_TRUE(result.get(0));
+    EXPECT_FALSE(mask.get(0));
+}
+
+TEST(BitMask, AndAssignMutatesInPlace)
+{
+    auto a = traaxx::BitMask(70);
+    auto b = traaxx::BitMask(70);
+    a.set(3);
+    a.set(64);
+    b.set(3);
+    a &= b;
+    EXPECT_TRUE(a.get(3));
+    EXPECT_FALSE(a.get(64));
+}
+
+TEST(BitMask, OrAssignMutatesInPlace)
+{
+    auto a = traaxx::BitMask(70);
+    auto b = traaxx::BitMask(70);
+    a.set(3);
+    b.set(69);
+    a |= b;
+    EXPECT_TRUE(a.get(3));
+    EXPECT_TRUE(a.get(69));
+}
+
+TEST(BitMask, AndOnMismatchedSizesReturnsEmpty)
+{
+    auto const a = traaxx::BitMask(70);
+    auto const b = traaxx::BitMask(64);
+    auto const result = a & b;
+    EXPECT_TRUE(result.empty());
+}
+
+TEST(BitMask, OrOnMismatchedSizesReturnsEmpty)
+{
+    auto const a = traaxx::BitMask(70);
+    auto const b = traaxx::BitMask(64);
+    auto const result = a | b;
+    EXPECT_TRUE(result.empty());
+}
+
+TEST(BitMask, AndAssignOnMismatchedSizesIsNoop)
+{
+    auto a = traaxx::BitMask(70);
+    a.set(3);
+    auto const b = traaxx::BitMask(64);
+    a &= b;
+    EXPECT_TRUE(a.get(3));
+    EXPECT_EQ(a.size(), 70u);
+}
+
+TEST(BitMask, OrAssignOnMismatchedSizesIsNoop)
+{
+    auto a = traaxx::BitMask(70);
+    a.set(3);
+    auto const b = traaxx::BitMask(64);
+    a |= b;
+    EXPECT_TRUE(a.get(3));
+    EXPECT_FALSE(a.get(64));
+    EXPECT_EQ(a.size(), 70u);
+}
+
 TEST(BitMask, ConcurrentAtomicOrOnSameWordIsRaceFree)
 {
     auto mask = traaxx::BitMask(64);
