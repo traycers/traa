@@ -1,4 +1,5 @@
 #include <traaxx/propagate_down_pointer_doubling.hpp>
+#include <traaxx/level_count_for.hpp>
 #include <algorithm>
 #include <execution>
 #include <numeric>
@@ -6,8 +7,7 @@
 namespace traaxx
 {
     template<typename IndexT>
-    BitMask<IndexT> propagate_down_pointer_doubling(
-        const std::vector<IndexT> &parent, const AncestorTable<IndexT> &table, BitMask<IndexT> seed)
+    BitMask propagate_down_pointer_doubling(const std::vector<IndexT> &parent, BitMask seed, IndexT d_max)
     {
         auto const n = parent.size();
         if (n == 0)
@@ -16,27 +16,39 @@ namespace traaxx
         }
         auto indices = std::vector<IndexT>(n);
         std::iota(indices.begin(), indices.end(), IndexT{ 0 });
+        auto const level_count = level_count_for(d_max);
         auto current = std::move(seed);
-        for (IndexT k = 0; k < table.level_count(); ++k)
+        auto anc = parent;
+        for (IndexT k = 0; k < level_count; ++k)
         {
-            auto const &level_k = table.level(k);
-            auto next = BitMask<IndexT>(static_cast<IndexT>(n));
+            auto next = BitMask(n);
             std::for_each(
                 std::execution::par,   //
                 indices.cbegin(),      //
                 indices.cend(),        //
                 [&](IndexT i)
                 {
-                    if (current.get(i) || current.get(level_k[i]))
+                    if (current.get(i) || current.get(anc[i]))
                     {
                         next.atomic_or(i);
                     }
                 });
             current = std::move(next);
+            if (k + IndexT{ 1 } < level_count)
+            {
+                auto next_anc = std::vector<IndexT>(n);
+                std::transform(
+                    std::execution::par,   //
+                    indices.cbegin(),      //
+                    indices.cend(),        //
+                    next_anc.begin(),      //
+                    [&](IndexT i) { return anc[anc[i]]; });
+                anc = std::move(next_anc);
+            }
         }
         return current;
     }
 
-    template BitMask<std::uint32_t> propagate_down_pointer_doubling<std::uint32_t>(
-        const std::vector<std::uint32_t> &, const AncestorTable<std::uint32_t> &, BitMask<std::uint32_t>);
+    template BitMask propagate_down_pointer_doubling<std::uint32_t>(
+        const std::vector<std::uint32_t> &, BitMask, std::uint32_t);
 }

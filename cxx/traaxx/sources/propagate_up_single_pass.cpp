@@ -3,7 +3,7 @@
 namespace traaxx
 {
     template<typename IndexT>
-    BitMask<IndexT> propagate_up_single_pass(const std::vector<IndexT> &parent, BitMask<IndexT> seed)
+    BitMask propagate_up_single_pass(const std::vector<IndexT> &parent, BitMask seed)
     {
         auto const n = static_cast<IndexT>(parent.size());
         for (IndexT i = n; i-- > 0;)
@@ -16,6 +16,5 @@ namespace traaxx
         return seed;
     }
 
-    template BitMask<std::uint32_t> propagate_up_single_pass<std::uint32_t>(
-        const std::vector<std::uint32_t> &, BitMask<std::uint32_t>);
+    template BitMask propagate_up_single_pass<std::uint32_t>(const std::vector<std::uint32_t> &, BitMask);
 }

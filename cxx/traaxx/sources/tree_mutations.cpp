@@ -77,7 +77,7 @@ namespace traaxx
     std::expected<void, ConvergenceError<IndexT>> Tree<T, IndexT>::deleteSubtree(IndexT x)
     {
         auto const n = static_cast<IndexT>(parent_.size());
-        auto seed = BitMask<IndexT>(n);
+        auto seed = BitMask(n);
         seed.set(x);
         auto mask_result = propagate_down_iterative(parent_, std::move(seed), n);
         if (!mask_result.has_value())
@@ -118,7 +118,7 @@ namespace traaxx
     std::expected<void, MoveError<IndexT>> Tree<T, IndexT>::move(IndexT x, IndexT q)
     {
         auto const n = static_cast<IndexT>(parent_.size());
-        auto seed = BitMask<IndexT>(n);
+        auto seed = BitMask(n);
         seed.set(x);
         auto mask_result = propagate_down_iterative(parent_, std::move(seed), n);
         if (!mask_result.has_value())

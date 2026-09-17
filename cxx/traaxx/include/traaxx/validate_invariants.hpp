@@ -121,7 +121,7 @@ namespace traaxx
                 violations.push_back(
                     Violation<IndexT>{ InvariantCheck::sibling_same_parent, std::move(same_parent_nodes) });
             }
-            auto seed = BitMask<IndexT>(n);
+            auto seed = BitMask(n);
             for (auto const root : root_nodes)
             {
                 seed.set(root);

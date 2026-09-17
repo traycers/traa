@@ -1,30 +1,11 @@
 #include <traaxx/ancestor_table.hpp>
+#include <traaxx/level_count_for.hpp>
 #include <algorithm>
 #include <execution>
 #include <numeric>
 
 namespace traaxx
 {
-    namespace
-    {
-        template<typename IndexT>
-        IndexT level_count_for(IndexT d_max)
-        {
-            if (d_max <= IndexT{ 1 })
-            {
-                return IndexT{ 1 };
-            }
-            auto k = IndexT{ 0 };
-            auto reach = IndexT{ 1 };
-            while (reach < d_max)
-            {
-                reach = static_cast<IndexT>(reach * IndexT{ 2 });
-                ++k;
-            }
-            return static_cast<IndexT>(k + IndexT{ 1 });
-        }
-    }
-
     template<typename IndexT>
     AncestorTable<IndexT>::AncestorTable(const std::vector<IndexT> &parent, IndexT d_max)
     {

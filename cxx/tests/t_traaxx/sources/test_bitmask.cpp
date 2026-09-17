@@ -6,7 +6,7 @@
 
 TEST(BitMask, ConstructedZeroInitialized)
 {
-    auto const mask = traaxx::BitMask<std::uint32_t>(70);
+    auto const mask = traaxx::BitMask(70);
     for (std::uint32_t i = 0; i < mask.size(); ++i)
     {
         EXPECT_FALSE(mask.get(i));
@@ -15,13 +15,13 @@ TEST(BitMask, ConstructedZeroInitialized)
 
 TEST(BitMask, SizeReportsBitCount)
 {
-    auto const mask = traaxx::BitMask<std::uint32_t>(130);
+    auto const mask = traaxx::BitMask(130);
     EXPECT_EQ(mask.size(), 130u);
 }
 
 TEST(BitMask, SetRoundTrip)
 {
-    auto mask = traaxx::BitMask<std::uint32_t>(70);
+    auto mask = traaxx::BitMask(70);
     mask.set(0);
     mask.set(63);
     mask.set(64);
@@ -38,7 +38,7 @@ TEST(BitMask, SetRoundTrip)
 
 TEST(BitMask, AtomicOrRoundTrip)
 {
-    auto mask = traaxx::BitMask<std::uint32_t>(10);
+    auto mask = traaxx::BitMask(10);
     mask.atomic_or(2);
     mask.atomic_or(5);
     EXPECT_TRUE(mask.get(2));
@@ -49,7 +49,7 @@ TEST(BitMask, AtomicOrRoundTrip)
 
 TEST(BitMask, AtomicOrDoesNotClobberNeighborBitsInSameWord)
 {
-    auto mask = traaxx::BitMask<std::uint32_t>(64);
+    auto mask = traaxx::BitMask(64);
     mask.atomic_or(3);
     mask.atomic_or(40);
     for (std::uint32_t i = 0; i < mask.size(); ++i)
@@ -61,8 +61,8 @@ TEST(BitMask, AtomicOrDoesNotClobberNeighborBitsInSameWord)
 
 TEST(BitMask, EqualityComparesContent)
 {
-    auto a = traaxx::BitMask<std::uint32_t>(20);
-    auto b = traaxx::BitMask<std::uint32_t>(20);
+    auto a = traaxx::BitMask(20);
+    auto b = traaxx::BitMask(20);
     EXPECT_EQ(a, b);
     a.set(5);
     EXPECT_NE(a, b);
@@ -72,8 +72,8 @@ TEST(BitMask, EqualityComparesContent)
 
 TEST(BitMask, SwapExchangesContent)
 {
-    auto a = traaxx::BitMask<std::uint32_t>(20);
-    auto b = traaxx::BitMask<std::uint32_t>(20);
+    auto a = traaxx::BitMask(20);
+    auto b = traaxx::BitMask(20);
     a.set(3);
     b.set(17);
     a.swap(b);
@@ -85,7 +85,7 @@ TEST(BitMask, SwapExchangesContent)
 
 TEST(BitMask, InvertFlipsAllValidBits)
 {
-    auto mask = traaxx::BitMask<std::uint32_t>(70);
+    auto mask = traaxx::BitMask(70);
     mask.set(0);
     mask.set(64);
     mask.invert();
@@ -98,7 +98,7 @@ TEST(BitMask, InvertFlipsAllValidBits)
 
 TEST(BitMask, InvertTwiceIsIdentity)
 {
-    auto mask = traaxx::BitMask<std::uint32_t>(70);
+    auto mask = traaxx::BitMask(70);
     mask.set(3);
     mask.set(69);
     auto const original = mask;
@@ -112,8 +112,8 @@ TEST(BitMask, InvertClearsPaddingBitsInLastWord)
     // size is not a multiple of 64 - inverting must not leave stray 1-bits
     // past bit_count in the last word, or two masks built the same way would
     // stop comparing equal after each is inverted.
-    auto a = traaxx::BitMask<std::uint32_t>(70);
-    auto b = traaxx::BitMask<std::uint32_t>(70);
+    auto a = traaxx::BitMask(70);
+    auto b = traaxx::BitMask(70);
     a.invert();
     b.invert();
     EXPECT_EQ(a, b);
@@ -121,7 +121,7 @@ TEST(BitMask, InvertClearsPaddingBitsInLastWord)
 
 TEST(BitMask, ConcurrentAtomicOrOnSameWordIsRaceFree)
 {
-    auto mask = traaxx::BitMask<std::uint32_t>(64);
+    auto mask = traaxx::BitMask(64);
     auto threads = std::vector<std::thread>{};
     for (std::uint32_t i = 0; i < 64; ++i)
     {

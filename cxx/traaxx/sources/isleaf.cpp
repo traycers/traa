@@ -14,7 +14,7 @@ namespace traaxx
         {
             return std::vector<bool>{};
         }
-        auto is_parent = BitMask<IndexT>(static_cast<IndexT>(n));
+        auto is_parent = BitMask(n);
         auto indices = std::vector<IndexT>(n);
         std::iota(
             indices.begin(),   //

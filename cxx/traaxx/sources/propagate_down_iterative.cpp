@@ -6,19 +6,19 @@
 namespace traaxx
 {
     template<typename IndexT>
-    std::expected<BitMask<IndexT>, ConvergenceError<IndexT>> propagate_down_iterative(
-        const std::vector<IndexT> &parent, BitMask<IndexT> seed, IndexT max_iterations)
+    std::expected<BitMask, ConvergenceError<IndexT>> propagate_down_iterative(
+        const std::vector<IndexT> &parent, BitMask seed, IndexT max_iterations)
     {
         auto const n = parent.size();
         if (n == 0)
         {
-            return std::move(seed);
+            return seed;
         }
         auto indices = std::vector<IndexT>(n);
         std::iota(indices.begin(), indices.end(), IndexT{ 0 });
-        auto const step = [&](BitMask<IndexT> const &current, BitMask<IndexT> &next)
+        auto const step = [&](BitMask const &current, BitMask &next)
         {
-            next = BitMask<IndexT>(static_cast<IndexT>(n));
+            next = BitMask(n);
             std::for_each(
                 std::execution::par,   //
                 indices.cbegin(),      //
@@ -39,7 +39,6 @@ namespace traaxx
         return std::move(result->state);
     }
 
-    template std::expected<BitMask<std::uint32_t>, ConvergenceError<std::uint32_t>>
-    propagate_down_iterative<std::uint32_t>(
-        const std::vector<std::uint32_t> &, BitMask<std::uint32_t>, std::uint32_t);
+    template std::expected<BitMask, ConvergenceError<std::uint32_t>> propagate_down_iterative<std::uint32_t>(
+        const std::vector<std::uint32_t> &, BitMask, std::uint32_t);
 }

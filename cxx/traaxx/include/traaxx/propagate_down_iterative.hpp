@@ -8,6 +8,6 @@
 namespace traaxx
 {
     template<typename IndexT>
-    std::expected<BitMask<IndexT>, ConvergenceError<IndexT>> propagate_down_iterative(
-        const std::vector<IndexT> &parent, BitMask<IndexT> seed, IndexT max_iterations);
+    std::expected<BitMask, ConvergenceError<IndexT>> propagate_down_iterative(
+        const std::vector<IndexT> &parent, BitMask seed, IndexT max_iterations);
 }

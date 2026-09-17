@@ -10,7 +10,7 @@ namespace traaxx
     std::vector<IndexT> lastchild(const std::vector<IndexT> &parent, const std::vector<IndexT> &sibling)
     {
         auto const n = parent.size();
-        auto has_right_sibling = BitMask<IndexT>(static_cast<IndexT>(n));
+        auto has_right_sibling = BitMask(n);
         auto indices = std::vector<IndexT>(n);
         std::iota(indices.begin(), indices.end(), IndexT{ 0 });
         std::for_each(

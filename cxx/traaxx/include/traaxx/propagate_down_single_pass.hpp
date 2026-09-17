@@ -6,5 +6,5 @@
 namespace traaxx
 {
     template<typename IndexT>
-    BitMask<IndexT> propagate_down_single_pass(const std::vector<IndexT> &parent, BitMask<IndexT> seed);
+    BitMask propagate_down_single_pass(const std::vector<IndexT> &parent, BitMask seed);
 }
