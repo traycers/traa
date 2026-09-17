@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <execution>
 #include <numeric>
+#include <traaxx/bitmask.hpp>
 
 namespace traaxx
 {
@@ -9,23 +10,24 @@ namespace traaxx
     std::vector<IndexT> lastchild(const std::vector<IndexT> &parent, const std::vector<IndexT> &sibling)
     {
         auto const n = parent.size();
-        auto has_right_sibling = std::vector<bool>(n, false);
-        for (IndexT k = 0; k < static_cast<IndexT>(n); ++k)
-        {
-            auto const s = sibling[k];
-            if (s != k)
-            {
-                has_right_sibling[s] = true;
-            }
-        }
-        auto result = std::vector<IndexT>(n);
-        std::iota(result.begin(), result.end(), IndexT{ 0 });
+        auto has_right_sibling = BitMask<IndexT>(static_cast<IndexT>(n));
         auto indices = std::vector<IndexT>(n);
         std::iota(indices.begin(), indices.end(), IndexT{ 0 });
         std::for_each(std::execution::par, indices.begin(), indices.end(),
+            [&](IndexT k)
+            {
+                auto const s = sibling[k];
+                if (s != k)
+                {
+                    has_right_sibling.atomic_or(s);
+                }
+            });
+        auto result = std::vector<IndexT>(n);
+        std::iota(result.begin(), result.end(), IndexT{ 0 });
+        std::for_each(std::execution::par, indices.begin(), indices.end(),
             [&](IndexT j)
             {
-                if (parent[j] != j && !has_right_sibling[j])
+                if (parent[j] != j && !has_right_sibling.get(j))
                 {
                     result[parent[j]] = j;
                 }
