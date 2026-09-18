@@ -11,14 +11,9 @@ project(
 
 
 give_files(
-    VAR sources_headers_public
-    DIRS "${PROJECT_SOURCE_DIR}/include"
-    FILTERS "*.hpp"
-)
-give_files(
-    VAR sources_headers_private
+    VAR sources_headers
     DIRS "${PROJECT_SOURCE_DIR}/sources"
-    FILTERS "*.hpp"
+    FILTERS "*.h" "*.hpp"
 )
 give_files(
     VAR sources_units
@@ -33,10 +28,8 @@ give_dirs(
 
 add_executable(
     ${PROJECT_NAME}
-    ${sources_headers_public}
-    ${sources_headers_private}
+    ${sources_headers}
     ${sources_units}
-    ${sources_version}
 )
 
 
@@ -48,15 +41,12 @@ target_include_directories(
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
-        $<BUILD_INTERFACE:${PACKAGE_NAME}::sanitizer>
-        ${PACKAGE_NAME}::traaxx
+        GTest::GTest
+        GTest::Main
+        ${PACKAGE_NAME}::sanitizer
         ${PACKAGE_NAME}::traaxx_simd
-        nlohmann_json::nlohmann_json
-    PUBLIC
 )
 
 
-install_component(
-    TARGET_NAME ${PROJECT_NAME}
-    NO_HEADERS
-)
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME})

@@ -31,12 +31,16 @@ give_dirs(
 )
 
 
-add_executable(
+add_library(
     ${PROJECT_NAME}
+    STATIC
     ${sources_headers_public}
     ${sources_headers_private}
     ${sources_units}
-    ${sources_version}
+)
+add_library(
+    ${PACKAGE_NAME}::${PROJECT_NAME}
+    ALIAS ${PROJECT_NAME}
 )
 
 
@@ -44,19 +48,28 @@ target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
         ${sources_include_dirs}
-)
+    PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>
+        $<INSTALL_INTERFACE:include/>)
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
         $<BUILD_INTERFACE:${PACKAGE_NAME}::sanitizer>
-        ${PACKAGE_NAME}::traaxx
-        ${PACKAGE_NAME}::traaxx_simd
-        nlohmann_json::nlohmann_json
+        TBB::tbb
+        xsimd
     PUBLIC
+)
+# xsimd types never appear in a public header of this library (verified: no
+# `#include <xsimd/...>` under include/traaxx_simd/), so a codegen-affecting
+# flag here is safe to keep PRIVATE without risking an ODR split with
+# traapp/t_traaxx_simd, which only see the plain-vector public API.
+target_compile_options(
+    ${PROJECT_NAME}
+    PRIVATE
+        -mavx2
 )
 
 
 install_component(
     TARGET_NAME ${PROJECT_NAME}
-    NO_HEADERS
 )

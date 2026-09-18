@@ -1,5 +1,7 @@
 #include <traaxx/depth.hpp>
 #include <traaxx/traaxx.hpp>
+#include <traaxx_simd/depth.hpp>
+#include <traaxx_simd/traaxx_simd.hpp>
 
 #include <nlohmann/json.hpp>
 
@@ -75,7 +77,7 @@ namespace
         {
             throw CliError{"args_mismatch", "--impl, --tree and --case are required"};
         }
-        if (args.impl != "std")
+        if (args.impl != "std" && args.impl != "simd")
         {
             throw CliError{"args_mismatch", "--impl " + args.impl + " is not built into this binary yet"};
         }
@@ -117,6 +119,14 @@ namespace
         auto data = corpus.at("data").get<std::vector<std::uint32_t>>();
         return traaxx::Tree<std::uint32_t>{std::move(parent), std::move(sibling), std::move(data)};
     }
+
+    traaxx_simd::Tree<std::uint32_t> loadUint32TreeSimd(const json& corpus)
+    {
+        auto parent = corpus.at("parent").get<std::vector<std::uint32_t>>();
+        auto sibling = corpus.at("sibling").get<std::vector<std::uint32_t>>();
+        auto data = corpus.at("data").get<std::vector<std::uint32_t>>();
+        return traaxx_simd::Tree<std::uint32_t>{std::move(parent), std::move(sibling), std::move(data)};
+    }
 }
 
 int main(int argc, char** argv)
@@ -132,26 +142,45 @@ int main(int argc, char** argv)
         {
             throw CliError{"invalid_tree_json", "unsupported payload_type"};
         }
-        auto const tree = loadUint32Tree(corpus);
         auto const op = caseJson.at("op").get<std::string>();
         if (op != "depth")
         {
             throw CliError{"unknown_op", "unsupported op: " + op};
         }
         auto const rssBefore = peakRssBytes();
-        for (std::uint64_t i = 0; i < args.warmup; ++i)
-        {
-            static_cast<void>(traaxx::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size())));
-        }
         auto timings = std::vector<std::int64_t>{};
         timings.reserve(args.repeat);
         auto result = std::vector<std::uint32_t>{};
-        for (std::uint64_t i = 0; i < args.repeat; ++i)
+        if (args.impl == "std")
         {
-            auto const start = std::chrono::steady_clock::now();
-            result = traaxx::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size())).value();
-            auto const end = std::chrono::steady_clock::now();
-            timings.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count());
+            auto const tree = loadUint32Tree(corpus);
+            for (std::uint64_t i = 0; i < args.warmup; ++i)
+            {
+                static_cast<void>(traaxx::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size())));
+            }
+            for (std::uint64_t i = 0; i < args.repeat; ++i)
+            {
+                auto const start = std::chrono::steady_clock::now();
+                result = traaxx::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size())).value();
+                auto const end = std::chrono::steady_clock::now();
+                timings.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count());
+            }
+        }
+        else
+        {
+            auto const tree = loadUint32TreeSimd(corpus);
+            for (std::uint64_t i = 0; i < args.warmup; ++i)
+            {
+                static_cast<void>(
+                    traaxx_simd::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size())));
+            }
+            for (std::uint64_t i = 0; i < args.repeat; ++i)
+            {
+                auto const start = std::chrono::steady_clock::now();
+                result = traaxx_simd::depth(tree.parent(), static_cast<std::uint32_t>(tree.parent().size())).value();
+                auto const end = std::chrono::steady_clock::now();
+                timings.push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count());
+            }
         }
         auto const rssAfter = peakRssBytes();
         auto output = json{};

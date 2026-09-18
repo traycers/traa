@@ -19,6 +19,7 @@ set(
     PROJECT_DEPS
     PKG nlohmann_json
     PKG TBB
+    PKG xsimd
 )
 find_pkgs(PROJECT_DEPS)
 if(USE_TEST)
@@ -30,6 +31,7 @@ endif()
 
 handle_version()
 add_subdirectory(traaxx)
+add_subdirectory(traaxx_simd)
 add_subdirectory(traapp)
 
 
